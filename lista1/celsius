@@ -1,0 +1,9 @@
+int main()
+{
+int num1;
+
+printf("digite numero 1: ");
+scanf("%d", &num1);
+
+printf("Convertido é %d", (num1 * 9/5) + 32);
+}
