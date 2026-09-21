@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+int main()
+{
+ char palavra[100];
+ 
+ printf("Digite palavra: ");
+ scanf("%s", palavra);
+
+ printf("A palavra é %s. \n", palavra);
+
+ // descobrir tamanho
+ int tam = strlen(palavra);
+ printf("%d \n", tam);
+ // alocar o espaço
+  char *x = (char *)malloc(tam*sizeof(char));
+
+ // copiar os dados
+ for(int i = 0; i < tam; i++){ 
+    x[i]=palavra[i];
+ }
+
+ printf("A palavra é %s. \n", x);
+
+}
