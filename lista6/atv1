@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 1000
+
+/* ---------- Pilha de char ---------- */
+typedef struct {
+    char dados[MAX];
+    int topo;            /* quantidade de elementos na pilha */
+} Pilha;
+
+void inicializa(Pilha *p) {
+    p->topo = 0;
+}
+
+int pilha_vazia(Pilha *p) {
+    return p->topo == 0;
+}
+
+void push(Pilha *p, char c) {
+    if (p->topo == MAX) {
+        printf("Erro: pilha cheia!\n");
+        exit(1);
+    }
+    p->dados[p->topo] = c;
+    p->topo++;
+}
+
+/* Encerra o programa se a pilha estiver vazia (por isso
+   sempre chamamos pilha_vazia antes de usar o pop) */
+char pop(Pilha *p) {
+    if (pilha_vazia(p)) {
+        printf("Erro: pop em pilha vazia!\n");
+        exit(1);
+    }
+    p->topo--;
+    return p->dados[p->topo];
+}
+
+/* ---------- Lógica do balanceamento ---------- */
+int eh_abertura(char c) {
+    return c == '(' || c == '[' || c == '{';
+}
+
+int eh_fechamento(char c) {
+    return c == ')' || c == ']' || c == '}';
+}
+
+/* Retorna 1 se 'abre' e 'fecha' formam um par (ex.: '(' e ')') */
+int combina(char abre, char fecha) {
+    return (abre == '(' && fecha == ')') ||
+           (abre == '[' && fecha == ']') ||
+           (abre == '{' && fecha == '}');
+}
+
+int balanceada(const char *expr) {
+    Pilha p;
+    inicializa(&p);
+
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char c = expr[i];
+
+        if (eh_abertura(c)) {
+            push(&p, c);
+        } else if (eh_fechamento(c)) {
+            if (pilha_vazia(&p))        /* fechou sem ter aberto */
+                return 0;
+
+            char topo = pop(&p);
+            if (!combina(topo, c))      /* tipo errado, ex.: "(]" */
+                return 0;
+        }
+        /* qualquer outro caractere é ignorado */
+    }
+
+    return pilha_vazia(&p);             /* sobrou abertura? então não está balanceada */
+}
+
+int main(void) {
+    char expr[MAX];
+
+    printf("Digite uma expressao: ");
+    if (fgets(expr, sizeof(expr), stdin) == NULL)
+        return 1;
+
+    expr[strcspn(expr, "\n")] = '\0';   /* remove o '\n' do final */
+
+    if (balanceada(expr))
+        printf("Balanceada!\n");
+    else
+        printf("NAO balanceada!\n");
+
+    return 0;
+}
