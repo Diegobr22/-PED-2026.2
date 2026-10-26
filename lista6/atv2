@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *dados;
+    int capacidade;  // posições do array (fixa)
+    int inicio;      // índice da frente: próximo elemento a sair
+    int fim;         // índice da próxima posição livre: onde o próximo entra
+    int tamanho;     // quantidade de elementos na fila
+} Fila;
+
+Fila *criar(int capacidade) {
+    Fila *f = malloc(sizeof(Fila));
+    f->dados = malloc(capacidade * sizeof(int));
+    f->capacidade = capacidade;
+    f->inicio = 0;
+    f->fim = 0;
+    f->tamanho = 0;   // a fila nasce vazia
+    return f;
+}
+
+int enqueue(Fila *f, int valor) {
+    if (f->tamanho == f->capacidade)
+        return 0;                            // fila cheia: nada foi inserido
+    f->dados[f->fim] = valor;
+    f->fim = (f->fim + 1) % f->capacidade;   // fila circular!!!
+    f->tamanho++;
+    return 1;                                // inserido com sucesso
+}
+
+int dequeue(Fila *f) {
+    if (f->tamanho == 0) {
+        printf("Fila vazia\n");
+        exit(1);
+    }
+    int valor = f->dados[f->inicio];
+    f->inicio = (f->inicio + 1) % f->capacidade;  // fila circular!!!
+    f->tamanho--;
+    return valor;
+}
+
+void liberar(Fila *f) {
+    free(f->dados);
+    free(f);
+}
+
+int main() {
+    int n, k;
+
+    printf("Quantas criancas (N)? ");
+    scanf("%d", &n);
+    printf("Quantas criancas a batata passa por rodada (K)? ");
+    scanf("%d", &k);
+
+    if (n < 1 || k < 1) {
+        printf("N e K precisam ser maiores que zero.\n");
+        return 1;
+    }
+
+    Fila *roda = criar(n);
+
+    // coloca as criancas 1..N na fila, nessa ordem
+    for (int i = 1; i <= n; i++)
+        enqueue(roda, i);
+
+    printf("Ordem de eliminacao:");
+
+    // enquanto tiver mais de uma crianca, joga mais uma rodada
+    while (roda->tamanho > 1) {
+        // a batata passa por K-1 criancas: cada uma vai para o fundo da fila
+        for (int i = 0; i < k - 1; i++)
+            enqueue(roda, dequeue(roda));
+
+        // a proxima da frente esta com a batata: sai da brincadeira
+        printf(" %d", dequeue(roda));
+    }
+
+    printf("\nVencedora: %d\n", dequeue(roda));
+
+    liberar(roda);
+    return 0;
+}
