@@ -59,19 +59,15 @@ int main() {
 
     Fila *roda = criar(n);
 
-    // coloca as criancas 1..N na fila, nessa ordem
     for (int i = 1; i <= n; i++)
         enqueue(roda, i);
 
     printf("Ordem de eliminacao:");
 
-    // enquanto tiver mais de uma crianca, joga mais uma rodada
     while (roda->tamanho > 1) {
-        // a batata passa por K-1 criancas: cada uma vai para o fundo da fila
         for (int i = 0; i < k - 1; i++)
             enqueue(roda, dequeue(roda));
 
-        // a proxima da frente esta com a batata: sai da brincadeira
         printf(" %d", dequeue(roda));
     }
 
